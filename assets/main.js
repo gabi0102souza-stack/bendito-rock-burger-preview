@@ -87,7 +87,7 @@
     <li class="track" data-name="${t.name}">
       <div class="track-photo">
         <span class="track-num">Faixa ${String(i + 1).padStart(2, "0")}</span>
-        <img src="${img(t.img)}" alt="${t.alt}" loading="lazy" width="600" height="600">
+        <img src="${img(t.img === "iron" || t.img === "stones" ? t.img + "-640" : t.img)}" alt="${t.alt}" loading="lazy" decoding="async" width="600" height="600">
       </div>
       <div class="track-body">
         <span class="track-tribute">${t.tribute}</span>
@@ -136,13 +136,15 @@
     tracks.forEach((t, k) => t.classList.toggle("is-active", k === i));
     if (tracks[i]) nowPlaying.textContent = tracks[i].dataset.name;
   }
-  function bumpVU(v) { level = Math.min(1, Math.max(level, v)); }
-  (function vuLoop() {
+  // o VU só roda enquanto tem sinal; parado, não gasta nada
+  let vuRunning = false, vuOn = -1;
+  function vuLoop() {
     const on = Math.round(level * vuBars.length);
-    vuBars.forEach((b, i) => b.classList.toggle("on", i < on));
+    if (on !== vuOn) { vuBars.forEach((b, i) => b.classList.toggle("on", i < on)); vuOn = on; }
     level *= 0.9;
-    requestAnimationFrame(vuLoop);
-  })();
+    if (level > 0.02) requestAnimationFrame(vuLoop); else { level = 0; vuBars.forEach((b) => b.classList.remove("on")); vuOn = 0; vuRunning = false; }
+  }
+  function bumpVU(v) { level = Math.min(1, Math.max(level, v)); if (!vuRunning && level > 0.02) { vuRunning = true; requestAnimationFrame(vuLoop); } }
   // escolhe a faixa mais próxima de um ponto de foco no viewport
   function pickActive(focusX) {
     let best = 0, dist = Infinity;
@@ -162,7 +164,7 @@
     <div class="menu-panel" role="tabpanel" id="panel-${c.id}" aria-labelledby="tab-${c.id}" ${i ? "hidden" : ""} tabindex="0">
       <div class="menu-grid">${c.items.map(([n, d, p, im, tag]) => `
         <article class="item ${im ? "" : "item--noimg"}">
-          ${im ? `<img src="${img(im)}" alt="${n}" loading="lazy" width="96" height="96">` : ""}
+          ${im ? `<img src="assets/img/thumb/${im}.webp" alt="${n}" loading="lazy" decoding="async" width="96" height="96">` : ""}
           <div>
             <div class="item-top"><h3>${n}</h3><span class="price"><small>R$</small>${p}</span></div>
             ${d ? `<p>${d}</p>` : ""}
@@ -236,10 +238,12 @@
   if (reduce) { loader.remove(); }
   else {
     document.body.classList.add("is-loading");
+    // a auréola acende só na primeira visita da sessão, e não espera as imagens: sai quando o HTML está pronto
+    let seen = false; try { seen = sessionStorage.getItem("bendito-intro") === "1"; sessionStorage.setItem("bendito-intro", "1"); } catch (e) {}
     const t0 = performance.now();
-    const go = () => setTimeout(hideLoader, Math.max(0, 1300 - (performance.now() - t0)));
-    if (document.readyState === "complete") go(); else window.addEventListener("load", go);
-    setTimeout(hideLoader, 3200);
+    const go = () => setTimeout(hideLoader, Math.max(0, (seen ? 0 : 750) - (performance.now() - t0)));
+    if (document.readyState !== "loading") go(); else document.addEventListener("DOMContentLoaded", go);
+    setTimeout(hideLoader, 1800);
   }
 
   /* ---------- Palavras que sobem ---------- */
@@ -307,9 +311,12 @@
       .to(".hero-tag", { y: -20, opacity: 0, ease: "none" }, 0);
 
     // marquee com velocidade ligada ao scroll
-    const mq = $("#marquee"); let mqX = 0, boost = 0;
+    const mq = $("#marquee"); let mqX = 0, boost = 0, mqVisible = true, half = mq.scrollWidth / 2;
+    new IntersectionObserver(([e]) => { mqVisible = e.isIntersecting; }).observe(mq);
+    window.addEventListener("resize", () => { half = mq.scrollWidth / 2; });
+    document.fonts && document.fonts.ready.then(() => { half = mq.scrollWidth / 2; });
     gsap.ticker.add(() => {
-      const half = mq.scrollWidth / 2;
+      if (!mqVisible) return;
       mqX -= 0.6 + boost; boost *= 0.92;
       if (mqX <= -half) mqX += half; if (mqX > 0) mqX -= half;
       mq.style.transform = `translate3d(${mqX}px,0,0)`;
@@ -340,13 +347,27 @@
   if (cv) {
     const ctx = cv.getContext("2d");
     const mobile = window.innerWidth < 700;
-    let W = 0, H = 0, dpr = 1, parts = [], extra = 0, running = !document.hidden;
+    let W = 0, H = 0, parts = [], extra = 0, running = !document.hidden, hs = 1;
     const mouse = { x: -999, y: -999 };
     const hero = $(".hero");
-    const resize = () => { dpr = Math.min(2, window.devicePixelRatio || 1); W = window.innerWidth; H = window.innerHeight; cv.width = W * dpr; cv.height = H * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0); };
+    // faísca é pequena e desfocada: resolução 1x basta e custa até 4x menos
+    const resize = () => { W = window.innerWidth; H = window.innerHeight; cv.width = W; cv.height = H; };
     resize(); window.addEventListener("resize", resize);
-    // quanto do hero ainda aparece na tela: lá a brasa é mais forte
-    const heroShare = () => { const r = hero.getBoundingClientRect(); return Math.max(0, Math.min(1, r.bottom / H)); };
+    // quanto do hero ainda aparece na tela: lá a brasa é mais forte (medido só no scroll)
+    const heroShare = () => { const r = hero.getBoundingClientRect(); hs = Math.max(0, Math.min(1, r.bottom / H)); return hs; };
+    window.addEventListener("scroll", heroShare, { passive: true }); heroShare();
+    // sprites pré-renderizados (brilho + núcleo) em 4 tons: desenhar imagem é muito mais barato que shadowBlur
+    const SPR = 32;
+    const sprites = [18, 26, 34, 42].map((hue) => {
+      const c = document.createElement("canvas"); c.width = c.height = SPR;
+      const g = c.getContext("2d"), grad = g.createRadialGradient(SPR / 2, SPR / 2, 0, SPR / 2, SPR / 2, SPR / 2);
+      grad.addColorStop(0, `hsla(${hue},100%,85%,1)`);
+      grad.addColorStop(0.18, `hsla(${hue},100%,62%,.95)`);
+      grad.addColorStop(0.45, `hsla(${hue},100%,50%,.28)`);
+      grad.addColorStop(1, `hsla(${hue},100%,45%,0)`);
+      g.fillStyle = grad; g.fillRect(0, 0, SPR, SPR);
+      return c;
+    });
     const spawn = (x, y, burst) => {
       const big = Math.random() < 0.12;
       parts.push({
@@ -354,14 +375,13 @@
         vx: burst ? (Math.random() - .5) * 6 : (Math.random() - .5) * .6,
         vy: burst ? -(1 + Math.random() * 5) : -(0.7 + Math.random() * 1.9),
         r: big ? 2.2 + Math.random() * 1.8 : 0.6 + Math.random() * 1.8,
-        life: 0, max: (burst ? 60 : 160) + Math.random() * 180, hue: 16 + Math.random() * 26, seed: Math.random() * 100,
+        life: 0, max: (burst ? 60 : 160) + Math.random() * 180, spr: sprites[(Math.random() * 4) | 0], seed: Math.random() * 100,
       });
     };
     const draw = (p, a) => {
-      ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, 6.283);
-      ctx.fillStyle = `hsla(${p.hue},100%,${58 + a * 14}%,${a})`;
-      ctx.shadowBlur = 12; ctx.shadowColor = `hsla(${p.hue},100%,55%,${a})`;
-      ctx.fill();
+      const s = p.r * 9;
+      ctx.globalAlpha = a;
+      ctx.drawImage(p.spr, p.x - s / 2, p.y - s / 2, s, s);
     };
     if (reduce) {
       // versão estática: um quadro de faíscas paradas sobre o hero
@@ -377,11 +397,11 @@
       // clique solta faísca
       window.addEventListener("pointerdown", (e) => { for (let i = 0; i < (mobile ? 14 : 22); i++) spawn(e.clientX, e.clientY, true); });
       document.addEventListener("visibilitychange", () => { running = !document.hidden; if (running) loop(); });
-      const cap = mobile ? 110 : 260;
+      const cap = mobile ? 90 : 200;
       function loop() {
         if (!running) return;
+        ctx.globalAlpha = 1;
         ctx.clearRect(0, 0, W, H);
-        const hs = heroShare();
         const rate = (mobile ? 0.5 : 0.9) + hs * (mobile ? 1.6 : 2.6) + extra;
         extra *= 0.93;
         let n = Math.floor(rate) + (Math.random() < rate % 1 ? 1 : 0);
@@ -419,7 +439,14 @@
     let gx = -500, gy = -500, tx = -500, ty = -500;
     window.addEventListener("pointermove", (e) => { tx = e.clientX; ty = e.clientY; glow.classList.add("is-on"); }, { passive: true });
     document.addEventListener("pointerleave", () => glow.classList.remove("is-on"));
-    (function follow() { gx += (tx - gx) * 0.14; gy += (ty - gy) * 0.14; glow.style.transform = `translate3d(${gx}px,${gy}px,0)`; requestAnimationFrame(follow); })();
+    // só anima enquanto o cursor está andando
+    let following = false;
+    const follow = () => {
+      gx += (tx - gx) * 0.14; gy += (ty - gy) * 0.14;
+      glow.style.transform = `translate3d(${gx}px,${gy}px,0)`;
+      if (Math.abs(tx - gx) + Math.abs(ty - gy) > 0.5) requestAnimationFrame(follow); else following = false;
+    };
+    window.addEventListener("pointermove", () => { if (!following) { following = true; requestAnimationFrame(follow); } }, { passive: true });
 
     /* botões magnéticos */
     $$(".magnetic, .magnetic-soft").forEach((el) => {
