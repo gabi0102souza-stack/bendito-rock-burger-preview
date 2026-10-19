@@ -1,0 +1,304 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Bendito Rock Burger · Burger na brasa em Osasco</title>
+<meta name="description" content="Bendito Rock Burger: burger assado na brasa, cerveja artesanal e rock em Osasco. Conceito de website para apresentação.">
+<meta name="theme-color" content="#0E0806">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230E0806'/%3E%3Cellipse cx='32' cy='14' rx='17' ry='5' fill='none' stroke='%23E2A552' stroke-width='3'/%3E%3Ctext x='32' y='54' text-anchor='middle' font-family='Georgia,serif' font-weight='700' font-size='36' fill='%23F2EEE6'%3EB%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600&family=Grenze:wght@500;700;800&family=Oswald:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="preload" as="image" href="assets/img/stones.webp">
+<link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <filter id="chalk"><feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="2" seed="3"/><feDisplacementMap in="SourceGraphic" scale="1.6"/></filter>
+</svg>
+
+<a class="skip" href="#conteudo">Pular para o conteúdo</a>
+
+<!-- brasas que sobem pela página toda -->
+<canvas class="embers" id="embers" aria-hidden="true"></canvas>
+<div class="cursor-glow" id="cursorGlow" aria-hidden="true"></div>
+<div class="fuse" aria-hidden="true"><span id="fuseBar"></span><i id="fuseHead"></i></div>
+<!-- Loader: a auréola acende -->
+<div class="loader" id="loader" aria-hidden="true">
+  <div class="loader-inner">
+    <svg class="loader-halo" viewBox="0 0 220 60"><ellipse cx="110" cy="30" rx="100" ry="20"/></svg>
+    <p class="loader-word">B<small>en</small>D<small>i</small>T<small>o</small></p>
+    <p class="loader-sub">acendendo a brasa<span class="dots"></span></p>
+  </div>
+</div>
+
+<header class="topbar" id="topbar">
+  <a href="#topo" class="brand" aria-label="Bendito Rock Burger, voltar ao início">
+    <span class="logo logo--sm" aria-hidden="true">
+      <svg class="logo-halo" viewBox="0 0 120 30"><ellipse cx="60" cy="15" rx="54" ry="10"/></svg>
+      <span class="logo-l1">B<small>en</small>D<small>i</small>T<small>o</small></span>
+      <span class="logo-l2"><span>Rock·Burger</span><span class="logo-dc">2016<br>D.C</span></span>
+    </span>
+  </a>
+  <nav class="nav" id="nav" aria-label="Principal">
+    <a href="#setlist">Setlist</a>
+    <a href="#cardapio">Cardápio</a>
+    <a href="#casa">A casa</a>
+    <a href="#pedir">Pedir</a>
+    <a href="#visite">Visite</a>
+  </nav>
+  <div class="topbar-right">
+    <span class="status" data-status><span class="status-dot"></span><span data-status-text>Consultando…</span></span>
+    <a class="btn btn--hot btn--sm magnetic" href="https://pedido.takeat.app/benditorockburger" target="_blank" rel="noopener">Pede aki</a>
+    <button class="menu-btn" id="menuBtn" aria-expanded="false" aria-controls="nav" aria-label="Abrir menu"><span></span><span></span></button>
+  </div>
+</header>
+
+<main id="conteudo">
+
+<!-- HERO -->
+<section class="hero" id="topo">
+  <div class="hero-fire" aria-hidden="true"></div>
+  <div class="hero-grid wrap">
+    <div class="hero-copy">
+      <p class="eyebrow"><span class="chip">Vila Campesina · Osasco</span><span class="chip chip--ghost">desde 2016 D.C.</span></p>
+      <h1 class="hero-title split">Em terras do Dogão, quem faz burger na brasa é <em>Rei</em>.</h1>
+      <p class="hero-lead">Burger de 160g assado na parrilla, ao ponto, no brioche selado na manteiga. Breja artesanal gelada e rock no volume que ele merece.</p>
+      <div class="hero-cta">
+        <a class="btn btn--hot magnetic" href="https://pedido.takeat.app/benditorockburger" target="_blank" rel="noopener">Pede aki <span aria-hidden="true">→</span></a>
+        <a class="btn btn--ghost magnetic" href="#setlist">Ouvir o setlist</a>
+      </div>
+      <ul class="hero-facts" aria-label="Destaques da casa">
+        <li><strong>160g</strong><span>na brasa, ao ponto</span></li>
+        <li><strong>11</strong><span>burgers no repertório</span></li>
+        <li><strong>Ao vivo</strong><span>acústicos de rock</span></li>
+      </ul>
+      <button class="motion-toggle" id="motionToggle" type="button" hidden></button>
+    </div>
+    <figure class="hero-media">
+      <div class="hero-glow" aria-hidden="true"></div>
+      <img src="assets/img/stones.webp" width="975" height="975" alt="Stones Burger: pão preto, burger na brasa, cheddar e bacon, com chamas da parrilla ao fundo" fetchpriority="high">
+      <figcaption class="hero-tag"><span>Faixa 02</span> Stones Burger · R$ 39,90</figcaption>
+    </figure>
+  </div>
+  <a href="#mandamentos" class="scroll-cue" aria-label="Rolar para baixo"><span></span></a>
+</section>
+
+<div class="marquee" aria-hidden="true">
+  <div class="marquee-track" id="marquee">
+    <span>Burger na brasa</span><i>✦</i><span>Cerveja artesanal</span><i>✦</i><span>BBQ</span><i>✦</i><span>Rock ao vivo</span><i>✦</i><span>Bendito desde 2016 D.C.</span><i>✦</i>
+    <span>Burger na brasa</span><i>✦</i><span>Cerveja artesanal</span><i>✦</i><span>BBQ</span><i>✦</i><span>Rock ao vivo</span><i>✦</i><span>Bendito desde 2016 D.C.</span><i>✦</i>
+  </div>
+</div>
+
+<!-- MANDAMENTOS -->
+<section class="section mandamentos" id="mandamentos">
+  <div class="wrap">
+    <header class="section-head">
+      <p class="kicker">Como a casa funciona</p>
+      <h2 class="split">Os mandamentos do Bendito</h2>
+      <p class="section-lead">Não tem segredo, tem fé na brasa. Quatro regras que a cozinha segue desde o primeiro burger.</p>
+    </header>
+    <div class="bento">
+      <article class="card card--photo b-a reveal">
+        <img src="assets/img/ig-p5.webp" width="512" height="640" loading="lazy" alt="Burgers assando na grelha da parrilla com chamas ao fundo">
+        <div class="card-body">
+          <span class="roman">I</span>
+          <h3>Na brasa ou nada</h3>
+          <p>Burger bovino de 160g assado na parrilla, ao ponto. Chapa é pra quem tem pressa.</p>
+        </div>
+      </article>
+      <article class="card b-b reveal">
+        <span class="roman">II</span>
+        <h3>Brioche selado na manteiga</h3>
+        <p>Pão fofinho, tostadinho na manteiga. No Stones, pão preto. Detalhe que vira devoção.</p>
+      </article>
+      <article class="card card--side b-c reveal">
+        <img src="assets/img/ipa-galaxias.webp" width="405" height="405" loading="lazy" alt="Garrafa da cerveja artesanal IPA das Galáxias na mão, em frente à parede com o logo do Bendito">
+        <div>
+          <span class="roman">III</span>
+          <h3>Breja artesanal no copo</h3>
+          <p>IPA das Galáxias, German Pilsner sem glúten, chopp de vinho. Cerveja forte pros fortes.</p>
+        </div>
+      </article>
+      <article class="card card--photo b-d reveal">
+        <img src="assets/img/ig-neon.webp" width="360" height="499" loading="lazy" alt="Letreiro iluminado do Bendito Rock Burger com o anjo roqueiro, à noite">
+        <div class="card-body">
+          <span class="roman">IV</span>
+          <h3>Volume no talo</h3>
+          <p>Rock na caixa e acústico ao vivo. Aqui burger tem trilha sonora.</p>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- SETLIST (imersão) -->
+<section class="setlist" id="setlist" aria-labelledby="setlist-title">
+  <div class="setlist-stage">
+    <div class="setlist-side">
+      <p class="kicker">Lado A · O setlist</p>
+      <h2 id="setlist-title">Seis faixas.<br>Todas na brasa.</h2>
+      <p class="setlist-hint"><span class="desk-only">Role para tocar o disco.</span><span class="mob-only">Arraste pro lado pra trocar de faixa.</span></p>
+      <div class="amp" aria-hidden="true">
+        <div class="amp-knob-wrap">
+          <svg class="amp-scale" viewBox="0 0 120 120" id="ampScale"></svg>
+          <div class="amp-knob" id="ampKnob"><span></span></div>
+        </div>
+        <div class="amp-read">
+          <span class="amp-label">Volume</span>
+          <span class="amp-value" id="ampValue">00</span>
+          <div class="vu" id="vu"></div>
+        </div>
+      </div>
+      <p class="now-playing" aria-live="polite">Tocando: <strong id="nowPlaying">Queen Burger</strong></p>
+    </div>
+    <div class="setlist-viewport" id="setlistViewport">
+      <ol class="setlist-track" id="setlistTrack"></ol>
+    </div>
+  </div>
+</section>
+
+<!-- CARDÁPIO -->
+<section class="section cardapio" id="cardapio">
+  <div class="wrap">
+    <header class="section-head section-head--row">
+      <div>
+        <p class="kicker">Cardápio completo</p>
+        <h2 class="split">Benditos, benditas e as brejas</h2>
+      </div>
+      <p class="section-lead">Preços do cardápio digital da casa. Pediu, chegou quentinho. Ou vem buscar.</p>
+    </header>
+    <div class="tabs" role="tablist" aria-label="Categorias do cardápio" id="tabs"></div>
+    <div class="menu-panels" id="menuPanels"></div>
+    <p class="menu-note">Valores conforme o cardápio digital no Takeat. Podem mudar sem aviso, confira na hora do pedido.</p>
+  </div>
+</section>
+
+<!-- A CASA -->
+<section class="section casa" id="casa">
+  <div class="wrap">
+    <header class="section-head">
+      <p class="kicker">A casa · o palco</p>
+      <h2 class="split">Letreiro aceso, brasa estalando, som rolando</h2>
+      <p class="section-lead">O Bendito é burger e é bar de rock. Tem noite de voz e violão com os clássicos, tem mesa pra galera e tem aniversário com bolo.</p>
+    </header>
+    <div class="casa-grid">
+      <figure class="casa-big reveal">
+        <img src="assets/img/capa.webp" width="708" height="675" loading="lazy" alt="Burgers na grelha da parrilla, com o fogo aceso atrás">
+        <figcaption>A parrilla trabalhando. É daqui que sai o sabor de brasa.</figcaption>
+      </figure>
+      <div class="posters">
+        <p class="posters-title"><span class="chip">Já passou pelo palco</span></p>
+        <div class="posters-row">
+          <img class="reveal" src="assets/img/ig-show2.webp" width="361" height="640" loading="lazy" alt="Cartaz: Bendito Rock Burger apresenta Filipe Amaral, acústico voz e violão, os clássicos do rock">
+          <img class="reveal" src="assets/img/ig-show1.webp" width="361" height="640" loading="lazy" alt="Cartaz do show acústico com Filipe Amaral no Bendito, entrada franca">
+          <img class="reveal" src="assets/img/ig-show3.webp" width="360" height="640" loading="lazy" alt="Cartaz do show de Daniel Wergan no Bendito, às 19h">
+        </div>
+        <p class="posters-note">A agenda dos próximos shows sai primeiro no <a href="https://www.instagram.com/benditorockburger/" target="_blank" rel="noopener">@benditorockburger</a>.</p>
+      </div>
+      <article class="bday reveal">
+        <div class="bday-icon" aria-hidden="true">
+          <svg viewBox="0 0 64 64"><path d="M14 30h36v24H14z"/><path d="M10 54h44"/><path d="M14 40c6 4 10-4 18 0s12-4 18 0"/><path d="M24 30v-8M32 30v-10M40 30v-8"/><path d="M24 16c-2 2 0 4 0 4s2-2 0-4zM32 12c-2 2 0 4 0 4s2-2 0-4zM40 16c-2 2 0 4 0 4s2-2 0-4z"/></svg>
+        </div>
+        <div>
+          <h3>Seu aniversário, nosso palco</h3>
+          <p>Vem com a galera: grupo de 10 pessoas, o aniversariante ganha o bolo. Reserva com no mínimo 2 dias de antecedência pelo WhatsApp.</p>
+          <a class="btn btn--line magnetic" href="https://wa.me/5511970588640?text=Ol%C3%A1!%20Quero%20reservar%20para%20um%20anivers%C3%A1rio%20no%20Bendito." target="_blank" rel="noopener">Reservar no WhatsApp</a>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- PEDIR -->
+<section class="section pedir" id="pedir">
+  <div class="wrap">
+    <header class="section-head">
+      <p class="kicker">Delivery &amp; retirada</p>
+      <h2 class="split">Bateu a fome? Pede aki.</h2>
+    </header>
+    <div class="pedir-grid">
+      <a class="order order--main magnetic-soft" href="https://pedido.takeat.app/benditorockburger" target="_blank" rel="noopener">
+        <span class="order-tag">Canal oficial</span>
+        <strong>Cardápio digital</strong>
+        <span>Delivery ou retirada, sem pedido mínimo. Direto com a casa.</span>
+        <span class="order-go" aria-hidden="true">→</span>
+      </a>
+      <a class="order magnetic-soft" href="https://wa.me/5511970588640" target="_blank" rel="noopener">
+        <span class="order-tag">WhatsApp</span>
+        <strong>(11) 97058-8640</strong>
+        <span>Reservas, aniversários e dúvidas.</span>
+        <span class="order-go" aria-hidden="true">→</span>
+      </a>
+      <div class="order order--muted">
+        <span class="order-tag">Também no</span>
+        <strong>iFood</strong>
+        <span>Procure por Bendito Rock Burger no app.</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- VISITE -->
+<section class="section visite" id="visite">
+  <div class="wrap visite-grid">
+    <div class="visite-info">
+      <p class="kicker">Visite</p>
+      <h2 class="split">Vem pra Vila Campesina</h2>
+      <address>
+        Rua Dr. Carlos de Moraes Barros, 218<br>
+        Vila Campesina, Osasco · SP<br>
+        06023-000
+      </address>
+      <p class="status status--big" data-status><span class="status-dot"></span><span data-status-text>Consultando…</span></p>
+      <table class="hours" aria-label="Horário de funcionamento">
+        <tbody id="hours"></tbody>
+      </table>
+      <div class="visite-cta">
+        <a class="btn btn--hot magnetic" href="https://www.google.com/maps/search/?api=1&amp;query=Rua+Dr.+Carlos+de+Moraes+Barros+218+Vila+Campesina+Osasco+SP" target="_blank" rel="noopener">Como chegar</a>
+        <a class="btn btn--ghost magnetic" href="https://www.instagram.com/benditorockburger/" target="_blank" rel="noopener">Instagram</a>
+      </div>
+    </div>
+    <div class="map">
+      <iframe title="Mapa do Bendito Rock Burger em Osasco" loading="lazy" referrerpolicy="no-referrer-when-downgrade" src="https://www.google.com/maps?q=Rua+Dr.+Carlos+de+Moraes+Barros,+218,+Vila+Campesina,+Osasco+-+SP&amp;output=embed"></iframe>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="footer">
+  <div class="wrap footer-grid">
+    <div class="logo logo--lg" role="img" aria-label="Bendito Rock Burger, 2016 D.C., Hamburgueria Artesanal">
+      <svg class="logo-halo" viewBox="0 0 120 30" aria-hidden="true"><ellipse cx="60" cy="15" rx="54" ry="10"/></svg>
+      <span class="logo-l1" aria-hidden="true">B<small>en</small>D<small>i</small>T<small>o</small></span>
+      <span class="logo-l2" aria-hidden="true"><span>Rock·Burger</span><span class="logo-dc">2016<br>D.C</span></span>
+      <span class="logo-rule" aria-hidden="true"></span>
+      <span class="logo-l3" aria-hidden="true">Hamburgueria artesanal</span>
+    </div>
+    <div class="footer-cols">
+      <div>
+        <p class="footer-h">Ache a gente</p>
+        <p>Rua Dr. Carlos de Moraes Barros, 218<br>Vila Campesina, Osasco · SP</p>
+      </div>
+      <div>
+        <p class="footer-h">Links</p>
+        <p><a href="https://pedido.takeat.app/benditorockburger" target="_blank" rel="noopener">Cardápio digital</a><br>
+        <a href="https://wa.me/5511970588640" target="_blank" rel="noopener">WhatsApp</a><br>
+        <a href="https://www.instagram.com/benditorockburger/" target="_blank" rel="noopener">Instagram</a></p>
+      </div>
+    </div>
+  </div>
+  <p class="wrap concept-note">Conceito independente de website para apresentação ao Bendito Rock Burger. Prévia não aprovada pela empresa. Fotos e informações do Instagram e do cardápio digital da casa.</p>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/lenis@1.1.13/dist/lenis.min.js"></script>
+<script src="assets/main.js"></script>
+</body>
+</html>
